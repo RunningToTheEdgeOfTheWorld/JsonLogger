@@ -1,0 +1,17 @@
+*~
+*.egg-info
+*.egg
+*.eggs
+*.pyc
+.idea/*
+.cache/*
+__pycache__/*
+.python-version
+.DS_Store
+models/*
+*.log
+*.ver
+
+handle/.sell2.py.swp
+handle/logs
+handle/nohup.out
