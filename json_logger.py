@@ -10,7 +10,7 @@ import traceback
 
 class JsonLogger(logging.Logger):
     def __init__(self, *args, **kwargs):
-        self.__formater = None
+        self.__formatter = None
         super().__init__(*args, **kwargs)
         self.propagate = False
 
@@ -51,7 +51,7 @@ class JsonLogger(logging.Logger):
         return msg, _args, _kwargs
 
     def addHandler(self, hdlr):
-        if hasattr(self, 'formaater') and not isinstance(hdlr.formatter, JsonFormatter):
+        if hasattr(self, 'formatter') and not isinstance(hdlr.formatter, JsonFormatter):
             raise ValueError('Please use JsonFormatter!')
         super().addHandler(hdlr)
 
