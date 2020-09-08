@@ -99,7 +99,7 @@ class JsonFormatter(logging.Formatter):
     def __init__(self, fmt_dict: dict=None, datefmt=None, style='%'):
         if not fmt_dict:
             fmt_dict = {
-                'logger': 'root',
+                'logger': '%(name)s',
                 'asctime': '%(asctime)s',
                 'level': '%(levelname)s',
                 'message': '%(message)s',
