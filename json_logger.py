@@ -4,7 +4,7 @@ __time__ = '2018/7/10'
 
 import sys
 import logging
-import json
+import simplejson as json
 import traceback
 
 
@@ -31,6 +31,7 @@ class JsonLogger(logging.Logger):
         return super().error(msg, *_args, **_kwargs)
 
     def exception(self, msg=None, **kwargs):
+        # traceback.print_exc()
         kwargs['traceback'] = traceback.format_exc().splitlines()
         msg, _args, _kwargs = self._parse_arge(msg, **kwargs)
         return super().error(msg, *_args, **_kwargs)
@@ -56,19 +57,20 @@ class JsonLogger(logging.Logger):
         super().addHandler(hdlr)
 
 
-root = JsonLogger(logging.INFO)
-json_manager = logging.Manager(root)
+logger = JsonLogger("root")
+json_manager = logging.Manager(logger)
 json_manager.loggerClass = JsonLogger
 
 JsonLogger.manager = json_manager
-JsonLogger.root = root
+JsonLogger.root = logger
 
 
-def get_json_logger(name=None):
-    if name:
-        return JsonLogger.manager.getLogger(name)
+def get_json_logger(name=None, default=True):
+    if default:
+        logger.name = name
+        return logger
     else:
-        return root
+        return JsonLogger.manager.getLogger(name)
 
 
 def format_msg(msg):
@@ -92,7 +94,7 @@ def format_msg(msg):
             except:
                 raise ValueError("Not allowed object, object must have __str__ method!")
 
-    return json.dumps(_format_msg(msg))
+    return json.dumps(_format_msg(msg), ensure_ascii=False)
 
 
 class JsonFormatter(logging.Formatter):
@@ -111,21 +113,7 @@ class JsonFormatter(logging.Formatter):
         super().__init__(fmt, datefmt, style)
 
 
-_default_formatter = JsonFormatter()
-_default_handler = logging.StreamHandler()
-_default_handler.formatter = _default_formatter
-root.addHandler(_default_handler)
-
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    logger = get_json_logger('test')
-    logger.addHandler(_default_handler)
-    logger.debug(word='Hello world', player={"name": 'Rick', "male": True})
-    logger.info(word='Hello world', player='Rick')
-    logger.error(word='Hello world', player='Rick')
-    logger.critical(word='Hello world', player='Rick')
-    try:
-        raise RuntimeError()
-    except:
-        logger.exception('Hello world')
+_default_handler = logging.StreamHandler(stream=sys.stdout)
+_default_handler.formatter = JsonFormatter()
+logger.addHandler(_default_handler)
+logger.setLevel(logging.INFO)
